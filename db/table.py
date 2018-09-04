@@ -17,13 +17,14 @@ class Table:
     #     print("%s 테이블을 삭제하였습니다." % self.name)
 
     def get_last_date(self, code):
-        from datetime.datetime import _strptime
+        import datetime
         self.cursor.execute("SELECT * FROM {tn} WHERE code='{code}' ORDER BY id DESC LIMIT 1"
                             .format(tn=self.name, code=code))
         try:
-            return _strptime(self.cursor.fetchone()[1], '%Y-%m-%d %H:%M:%S') # date column
+            return datetime.datetime.strptime(self.cursor.fetchone()[1], '%Y-%m-%d %H:%M:%S')  # date column
         except TypeError:
-            return print("찾는 데이터가 없습니다")
+            # print("Couldn't Find Last Date")
+            return None
 
     def commit(self):
         self.con.commit()
