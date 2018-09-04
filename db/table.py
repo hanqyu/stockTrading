@@ -28,20 +28,21 @@ class Table:
         print("sql connect closed")
 
     def create_table(self):
+        self.cursor.execute('PRAGMA encoding="UTF-8"')
         try:
             self.cursor.execute(
-                """CREATE TABLE {tn}(id INTEGER PRIMARY KEY, Date date, Code int, Name char(30), Open real, High real,
-                Low real, Close real, Diff real, Volume real)""".format(tn=self.name))
+                """CREATE TABLE {tn}(id INTEGER PRIMARY KEY, date date, code int, name char(30), open real, high real,
+                low real, close real, diff real, volume real)""".format(tn=self.name))
         except sqlite3.OperationalError:
             print("{tn} 테이블이 이미 존재합니다".format(tn=self.name))
 
     def insert_row(self, value):
         self.cursor.execute("""
-                            INSERT INTO {tn}(Date, Code, Name, Open, High, Low, Close, Diff, Volume) 
+                            INSERT INTO {tn}(date, code, name, open, high, low, close, diff, volume) 
                             VALUES (?,?,?,?,?,?,?,?,?)""".format(tn=self.name), value)
 
     def get_rows(self, date, values):
-        query = "SELECT {val} FROM {tn} WHERE {tn}.Date = {date}" \
+        query = "SELECT {val} FROM {tn} WHERE {tn}.date = {date}" \
             .format(val=', '.join(values), tn=self.name, date=date)
         self.cursor.execute(query)
         return self.cursor.fetchall()
