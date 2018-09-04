@@ -13,6 +13,6 @@ def codes():
 
     # 코드 6자리화
     code_df['종목코드'] = code_df['종목코드'].map('{:06d}'.format)
-    code_df = code_df.rename(columns={'회사명': 'name', '종목코드': 'code'})
+    code_df = code_df.rename(columns={'회사명': 'corp_name', '종목코드': 'corp_code'})
 
     return code_df

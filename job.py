@@ -1,16 +1,26 @@
 import scraping.scraping_from_naver as sc
 import scraping.codes
 from db.table import Table
+from multiprocessing import Pool
 
 codes = scraping.codes.codes()
 
-for corp in codes.itertuples():
-    code, name = corp['code'], corp['name']
+# multiprocess
+# pool = Pool(processes=4)
+# for x in pool.map(get_content, list_clients):
+#     result.append(x)
 
-    got_data = sc.getData(code)
-    data = sc.preprocess(got_data, code, name)
+for corp in codes.itertuples():
+    code, name = corp['corp_code'], corp['corp_name']
+
+    data = sc.getData(code)
+    data = sc.preprocess(data, code, name)
 
     table = Table()
-    # df를 row별로, 컬럼 순서 지켜서
+    data.to_sql(name=table.name, con=table.con, if_exists='append', index=False)
 
-    df.to_sql(name=table.name, table.con, if_exists='append', index=False, dtype=)
+
+
+
+table.commit()
+table.close()

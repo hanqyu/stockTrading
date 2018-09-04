@@ -7,6 +7,16 @@ import pandas as pd
 '''
 
 
+def getData(code, page_num=20):
+    url = 'http://finance.naver.com/item/sise_day.nhn?code={code}'.format(code=code)
+    df = pd.DataFrame()
+    for page in range(1, page_num+1):
+        pg_url = '{url}&page={page}'.format(url=url, page=page)
+        df = df.append(pd.read_html(pg_url, header=0)[0], ignore_index=True)
+
+    return df.dropna()
+
+
 def preprocess(df, code, name):
     # 한글로 된 컬럼명을 영어로 바꿔줌
     df = df.rename(columns= {'날짜': 'date', '종가': 'close', '전일비': 'diff',
@@ -26,13 +36,3 @@ def preprocess(df, code, name):
     df['code'] = pd.Series(code, index=df.index)
     df['name'] = pd.Series(name, index=df.index)
     return df
-
-
-def getData(code, page_num=20):
-    url = 'http://finance.naver.com/item/sise_day.nhn?code={code}'.format(code=code)
-    df = pd.DataFrame()
-    for page in range(1, page_num+1):
-        pg_url = '{url}&page={page}'.format(url=url, page=page)
-        df = df.append(pd.read_html(pg_url, header=0)[0], ignore_index=True)
-
-    return preprocess(df.dropna())

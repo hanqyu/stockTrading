@@ -31,7 +31,7 @@ class Table:
         self.cursor.execute('PRAGMA encoding="UTF-8"')
         try:
             self.cursor.execute(
-                """CREATE TABLE {tn}(id INTEGER PRIMARY KEY, date date, code int, name char(30), open real, high real,
+                """CREATE TABLE {tn}(id INTEGER PRIMARY KEY, date date, code char(6), name char(30), open real, high real,
                 low real, close real, diff real, volume real)""".format(tn=self.name))
         except sqlite3.OperationalError:
             print("{tn} 테이블이 이미 존재합니다".format(tn=self.name))
