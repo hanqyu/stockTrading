@@ -5,6 +5,7 @@ import scraping.codes
 from db.table import Table
 import sys
 import datetime
+import math
 from multiprocessing import Pool
 
 
@@ -26,12 +27,12 @@ table = Table()
 
 for i, name, code in codes.itertuples(name=None):
     last_date = table.get_last_date(code)
-    page_num = (datetime.datetime.today() - last_date) % 10
+    page_num = math.ceil((datetime.datetime.today() - last_date).days / 10)
     data = sc.getData(code, page_num=page_num)
     data = sc.preprocess(data, code, name)
 
     if last_date is not None:
-        data = data.drop(data['date'].apply(lambda x: x <= last_date).index)
+        data = data.drop(data[data['date'].apply(lambda x: x <= last_date)].index)
     data.to_sql(name=table.name, con=table.con, if_exists='append', index=False)
     table.commit()
     progressBar(name, codes[codes['corp_code'] == code].index[0], len(codes), bar_length=50)
