@@ -18,7 +18,7 @@ class Table:
 
     def get_last_date(self, code):
         import datetime
-        self.cursor.execute("SELECT * FROM {tn} WHERE code='{code}' ORDER BY id DESC LIMIT 1"
+        self.cursor.execute("SELECT * FROM {tn} WHERE code='{code}' ORDER BY {tn}.date DESC LIMIT 1"
                             .format(tn=self.name, code=code))
         try:
             return datetime.datetime.strptime(self.cursor.fetchone()[1], '%Y-%m-%d %H:%M:%S')  # date column
@@ -47,9 +47,9 @@ class Table:
                             INSERT INTO {tn}(date, code, name, open, high, low, close, diff, volume) 
                             VALUES (?,?,?,?,?,?,?,?,?)""".format(tn=self.name), value)
 
-    def get_rows(self, date, values):
-        query = "SELECT {val} FROM {tn} WHERE {tn}.date = {date}" \
-            .format(val=', '.join(values), tn=self.name, date=date)
+    def get_rows(self, code, values):
+        query = "SELECT {val} FROM {tn} WHERE {tn}.code = '{code}' ORDER BY {tn}.date" \
+            .format(val=', '.join(values), tn=self.name, code=code)
         self.cursor.execute(query)
         return self.cursor.fetchall()
 
