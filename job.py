@@ -26,8 +26,8 @@ table = Table()
 
 for i, name, code in codes.itertuples(name=None):
     last_date = table.get_last_date(code)
-
-    data = sc.getData(code)
+    page_num = (datetime.datetime.today() - last_date) % 10
+    data = sc.getData(code, page_num=page_num)
     data = sc.preprocess(data, code, name)
 
     if last_date is not None:
