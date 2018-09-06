@@ -3,8 +3,8 @@ import sqlite3
 
 class Table:
     def __init__(self, name=None):
-        import os
-        self.con = sqlite3.connect(os.getcwd() + "/daily.db", timeout=10)
+        # import os
+        self.con = sqlite3.connect("/Users/kyujoohan/PycharmProjects/stockTrading/daily.db", timeout=10)
         self.cursor = self.con.cursor()
         self.name = name or 'daily'
         print("%s 테이블을 호출합니다" % self.name)
