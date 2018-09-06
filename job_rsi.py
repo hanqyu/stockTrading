@@ -48,7 +48,7 @@ def main():
             progressBar(name, codes[codes['corp_code'] == code].index[0], len(codes), bar_length=50)
 
     print(result)
-    file_name = "RSI_{0}.csv".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
+    file_name = "RSI_{0}.csv".format(datetime.datetime.now().strftime("%Y-%m-%d %H시%M분"))
     result.to_csv(file_name)
     print("{0} 저장 완료".format(file_name))
     end_time = datetime.datetime.now()
