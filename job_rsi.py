@@ -26,31 +26,35 @@ def get_row_for_rsi(code):
 
 # TODO-1 나중에 같은 날짜 && 같은 코드의 중복데이터가 쌓이면 제거해주는 작업 필요
 
+def main():
+    start_time = datetime.datetime.now()
+    print("RSI 계산 시작시간: {0}\r".format(start_time))
+    codes = scraping.codes.codes()
+    result = pd.DataFrame(columns=['date', 'code', 'name', 'rsi'])
 
-start_time = datetime.datetime.now()
-print("RSI 계산 시작시간: {0}\r".format(start_time))
-codes = scraping.codes.codes()
-result = pd.DataFrame(columns=['date', 'code', 'name', 'rsi'])
+    table = Table()
+    values = ['date', 'code', 'name', 'close']
 
-table = Table()
-values = ['date', 'code', 'name', 'close']
+    with Pool(processes=4) as pool:
+        for df in pool.map(get_row_for_rsi, codes['corp_code'].tolist()):
+            RSI(df)
+            code = df.iloc[-1]['code']
+            name = df.iloc[-1]['name']
+            bool = datetime.datetime.today().strftime('%Y-%m-%d') == table.get_last_date(code).strftime('%Y-%m-%d')  # 오늘일경우
+            rsi = df[df['date'] == table.get_last_date(code).strftime('%Y-%m-%d %H:%M:%S')].iloc[-1]
+            if bool & (rsi['rsi'] <= 30):
+                result = result.append(rsi, ignore_index=True)
 
-pool = Pool(processes=4)
+            progressBar(name, codes[codes['corp_code'] == code].index[0], len(codes), bar_length=50)
 
-for df in pool.map(get_row_for_rsi, codes['corp_code'].tolist()):
-    RSI(df)
-    code = df.iloc[-1]['code']
-    name = df.iloc[-1]['name']
-    bool = datetime.datetime.today().strftime('%Y-%m-%d') == table.get_last_date(code).strftime('%Y-%m-%d')  # 오늘일경우
-    rsi = df[df['date'] == table.get_last_date(code).strftime('%Y-%m-%d %H:%M:%S')].iloc[-1]
-    if bool & (rsi['rsi'] <= 30):
-        result = result.append(rsi, ignore_index=True)
+    print(result)
+    file_name = "RSI_{0}.csv".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
+    result.to_csv(file_name)
+    print("{0} 저장 완료".format(file_name))
+    end_time = datetime.datetime.now()
+    print("종료시간: {0}".format(end_time))
+    print("{0}분 소요".format(int((end_time-start_time).seconds/60))
 
-    progressBar(name, codes[codes['corp_code'] == code].index[0], len(codes), bar_length=50)
 
-print(result)
-file_name = "RSI_{0}.csv".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
-result.to_csv(file_name)
-print("{0} 저장 완료".format(file_name))
-end_time = datetime.datetime.now()
-print("종료시간: {0}".format(end_time))
+if __name__ == '__main__':
+    main()
