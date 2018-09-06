@@ -5,5 +5,5 @@ import job_rsi
 
 
 if __name__ == '__main__':
-    job_scraping.main()
+    # job_scraping.main()
     job_rsi.main()

@@ -1,3 +1,5 @@
+#-*- coding: utf-8 -*-
+
 import sqlite3
 
 
@@ -7,14 +9,13 @@ class Table:
         self.con = sqlite3.connect("/Users/kyujoohan/PycharmProjects/stockTrading/daily.db", timeout=10)
         self.cursor = self.con.cursor()
         self.name = name or 'daily'
-        print("%s 테이블을 호출합니다" % self.name)
+        print("open %s table" % self.name)
 
     def load_table(self):
         return self.cursor.execute("SELECT * FROM {tn}".format(tn=self.name))
 
     # def delete_table(self):
     #     self.cursor.execute("DROP TABLE {tn}".format(tn=self.name))
-    #     print("%s 테이블을 삭제하였습니다." % self.name)
 
     def get_last_date(self, code):
         import datetime
@@ -40,7 +41,7 @@ class Table:
                 """CREATE TABLE {tn}(id INTEGER PRIMARY KEY, date date, code char(6), name char(30), open real, high real,
                 low real, close real, diff real, volume real)""".format(tn=self.name))
         except sqlite3.OperationalError:
-            print("{tn} 테이블이 이미 존재합니다".format(tn=self.name))
+            print("{tn} already exists".format(tn=self.name))
 
     def insert_row(self, value):
         self.cursor.execute("""

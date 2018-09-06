@@ -21,7 +21,7 @@ def progressBar(name, value, endvalue, bar_length=20):
 
 def main():
     start_time = datetime.datetime.now()
-    print("Scraping 시작시간: {0}\r".format(start_time))
+    print("Scraping 시작시간: {0}".format(start_time))
 
     codes = scraping.codes.codes()
 
