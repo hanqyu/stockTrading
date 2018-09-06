@@ -19,28 +19,32 @@ def progressBar(name, value, endvalue, bar_length=20):
 
 # TODO-1 나중에 같은 날짜 && 같은 코드의 중복데이터가 쌓이면 제거해주는 작업 필요
 
+def main():
+    start_time = datetime.datetime.now()
+    print("Scraping 시작시간: {0}\r".format(start_time))
 
-start_time = datetime.datetime.now()
-print("Scraping 시작시간: {0}\r".format(start_time))
+    codes = scraping.codes.codes()
 
-codes = scraping.codes.codes()
+    table = Table()
 
-table = Table()
+    for i, name, code in codes.itertuples(name=None):
+        last_date = table.get_last_date(code)
+        page_num = math.ceil((datetime.datetime.today() - last_date).days / 10)
+        data = sc.getData(code, page_num=page_num)
+        data = sc.preprocess(data, code, name)
 
-for i, name, code in codes.itertuples(name=None):
-    last_date = table.get_last_date(code)
-    page_num = math.ceil((datetime.datetime.today() - last_date).days / 10)
-    data = sc.getData(code, page_num=page_num)
-    data = sc.preprocess(data, code, name)
+        if last_date is not None:  # last_date가 없으면 통째로 다 넣게 됨
+            data = data.drop(data[data['date'].apply(lambda x: x <= last_date)].index)
+        data.to_sql(name=table.name, con=table.con, if_exists='append', index=False)
+        table.commit()
+        progressBar(name, codes[codes['corp_code'] == code].index[0], len(codes), bar_length=50)
 
-    if last_date is not None:  # last_date가 없으면 통째로 다 넣게 됨
-        data = data.drop(data[data['date'].apply(lambda x: x <= last_date)].index)
-    data.to_sql(name=table.name, con=table.con, if_exists='append', index=False)
-    table.commit()
-    progressBar(name, codes[codes['corp_code'] == code].index[0], len(codes), bar_length=50)
+    print("모든 Scraping 완료!")
+    table.close()
 
-print("모든 Scraping 완료!")
-table.close()
+    end_time = datetime.datetime.now()
+    print("종료시간: {0}".format(end_time))
 
-end_time = datetime.datetime.now()
-print("종료시간: {0}".format(end_time))
+
+if __name__ == '__main__':
+    main()
