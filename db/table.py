@@ -9,7 +9,7 @@ class Table:
         self.con = sqlite3.connect("/Users/kyujoohan/PycharmProjects/stockTrading/daily.db", timeout=10)
         self.cursor = self.con.cursor()
         self.name = name or 'daily'
-        print("open %s table" % self.name)
+        print("SQLITE3: open %s table" % self.name)
 
     def load_table(self):
         return self.cursor.execute("SELECT * FROM {tn}".format(tn=self.name))
@@ -32,7 +32,7 @@ class Table:
 
     def close(self):
         self.con.close()
-        print("sql connect closed")
+        print("SQLITE3: sql connect closed")
 
     def create_table(self):
         self.cursor.execute('PRAGMA encoding="UTF-8"')
@@ -41,7 +41,7 @@ class Table:
                 """CREATE TABLE {tn}(id INTEGER PRIMARY KEY, date date, code char(6), name char(30), open real, high real,
                 low real, close real, diff real, volume real)""".format(tn=self.name))
         except sqlite3.OperationalError:
-            print("{tn} already exists".format(tn=self.name))
+            print("SQLITE3: {tn} already exists".format(tn=self.name))
 
     def insert_row(self, value):
         self.cursor.execute("""
@@ -59,5 +59,4 @@ class Table:
         self.cursor.execute('ALTER TABLE %s ADD COLUMN %s' % (self.name, col_name))
 
     def __delete__(self):
-        self.con.close()
-        print("sql connect closed")
+        self.close()
