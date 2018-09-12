@@ -29,7 +29,10 @@ def main():
 
     for i, name, code in codes.itertuples(name=None):
         last_date = table.get_last_date(code)
-        page_num = math.ceil((datetime.datetime.today() - last_date).days / 10)
+        if last_date is None:
+            page_num = 20
+        else:
+            page_num = math.ceil((datetime.datetime.today() - last_date).days / 10)
         data = sc.getData(code, page_num=page_num)
         data = sc.preprocess(data, code, name)
 
