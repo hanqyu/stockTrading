@@ -29,13 +29,13 @@ def main():
 
     for i, name, code in codes.itertuples(name=None):
         last_date = table.get_last_date(code)
-        if last_date is None:
-            page_num = 20
-        else:
+        page_num = 20
+        if last_date is not None:
             page_num = math.ceil((datetime.datetime.today() - last_date).days / 10)
+        if page_num == 0:
+            continue
         data = sc.getData(code, page_num=page_num)
         data = sc.preprocess(data, code, name)
-
         if last_date is not None:  # last_date가 없으면 통째로 다 넣게 됨
             data = data.drop(data[data['date'].apply(lambda x: x <= last_date)].index)
         data.to_sql(name=table.name, con=table.con, if_exists='append', index=False)
